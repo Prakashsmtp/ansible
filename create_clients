@@ -1,0 +1,53 @@
+Ansible Client Setup Guide
+This guide explains how to add client machines to our Ansible setup.
+
+Prerequisites
+Ansible installed on the control node (the machine running Ansible commands). For installation instructions, visit Ansible's official documentation.
+SSH access from the control node to the client nodes. The control node should be able to SSH into the client nodes without a password.
+Python installed on the client nodes. Most Linux distributions should have Python installed by default.
+Step 1: Generate SSH key pair on control node
+If you have not already done so, generate a new SSH key pair on your control node:
+
+Command:
+ssh-keygen
+
+Step 2: Copy the SSH key to the client node
+Next, copy your public SSH key to your client node. Replace user with your username and client-node with the IP address or hostname of your client node:
+
+Command : 
+ssh-copy-id user@client-node
+
+Step 3: Add the client node to your Ansible inventory
+The Ansible inventory file is a configuration file where you define the hosts (client nodes) that Ansible will manage. By default, the Ansible inventory file is located at /etc/ansible/hosts.
+
+Open the Ansible inventory file with a text editor:
+
+command :
+sudo nano /etc/ansible/hosts
+
+Add your client node to the inventory file:
+
+[clients]
+client-node ansible_user=user
+
+
+Again, replace user with your username and client-node with the IP address or hostname of your client node.
+
+You can test your setup by running an Ansible ping command, which will try to connect to your client node and return a pong if successful:
+
+Command : 
+ansible -m ping clients
+
+You should see a response similar to this:
+
+Example Result:
+
+client-node | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+
+If you see this response, you have successfully added a client node to your Ansible setup!
+
+Remember, if you have multiple client nodes, you need to repeat steps 2 and 3 for each client node. You can also group client nodes under different categories in your inventory file, depending on your use case.
