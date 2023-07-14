@@ -1,0 +1,83 @@
+Server Info : 
+server (192.168.0.211)
+client PC (192.168.0.215)
+
+Install Ansible on your server (192.168.0.211):
+
+Open your terminal and run the following commands:
+
+On Ubuntu:
+
+sudo apt-get update
+sudo apt-get install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt-get install ansible
+On CentOS:
+
+
+sudo yum install epel-release
+sudo yum install ansible
+
+
+SSH Setup:
+
+Next, you'll need to setup SSH access from your server to the client PC (192.168.0.215).
+
+First, create an SSH key on the server, if it does not exist:
+
+ssh-keygen
+The keys are usually stored in the ~/.ssh/ directory. The private key is named id_rsa and the public key is id_rsa.pub.
+
+Next, copy your SSH key to the client PC:
+
+
+ssh-copy-id user@192.168.0.215
+Replace "user" with the actual username on the client PC. This command will prompt for the user's password on the client PC.
+
+Create Ansible Inventory:
+
+On your server, create a file named "hosts" in /etc/ansible (or wherever your Ansible configuration is):
+
+
+sudo nano /etc/ansible/hosts
+Add the client's IP to the file:
+
+[clients]
+192.168.0.215 ansible_user=user
+Replace "user" with the actual username on the client PC.
+
+Write Ansible Playbook:
+
+Ansible Playbooks are written in YAML. Here is a basic example that updates the package manager cache and upgrades all packages:
+
+
+---
+- hosts: clients
+  become: yes
+
+  tasks:
+  - name: update packages
+    apt:
+      update_cache: yes
+      upgrade: 'yes'
+
+  - name: Reboot the machine
+    reboot:
+	
+	
+This playbook uses the apt module, which is used for package management with APT (suitable for Debian-based distributions like Ubuntu). If you're using a RedHat-based distribution, you may need to use the yum module instead.
+
+Schedule Ansible Playbook:
+
+The final step is to schedule the playbook to run at the desired time. You can use cron for this.
+
+First, open your crontab file:
+
+crontab -e
+Then add a line like this to run the playbook at midnight:
+
+
+0 0 * * * /usr/bin/ansible-playbook /path/to/your/playbook.yml
+Replace "/path/to/your/playbook.yml" with the actual path to the playbook.
+
+This should give you a basic setup for what you want to achieve. If you have more complex needs or run into any issues, you may need to do further research into the specific modules and features of Ansible.
